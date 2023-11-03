@@ -8,14 +8,43 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var viewModel = ContentViewModel()
+
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            TextField(
+                text: $viewModel.newTodoName,
+                label: { Text("Name") }
+            )
+            .textFieldStyle(.roundedBorder)
+            
+            TextField(
+                text: $viewModel.newTodoDescription,
+                label: { Text("Description") }
+            )
+            .textFieldStyle(.roundedBorder)
+
+            Button(
+                action: { viewModel.createTodo() },
+                label: { Text("Add Todo") }
+            )
+
+            List {
+                ForEach(viewModel.todos) { todo in
+                    VStack {
+                        Text(todo.name).font(.title)
+                        Text(todo.description ?? "").font(.caption)
+                    }
+                }
+            }
+
+            Button(
+                action: { viewModel.cancelSubscription() },
+                label: { Text("Cancel Subscription") }
+            )
         }
         .padding()
+        .onAppear(perform: viewModel.subscribeToTodos)
     }
 }
 
